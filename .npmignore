@@ -1,3 +1,8 @@
 index.ts
+index.test.ts
+jest.config.js
 build.js
 pnpm-lock.yaml
+.git
+.github
+tsconfig.json
