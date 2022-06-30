@@ -2,11 +2,11 @@ const { execSync } = require("child_process");
 const { build: esbuild } = require("esbuild");
 
 const configs = [{
-  entryPoints: ["index.ts"],
+  entryPoints: ["src/index.ts"],
   outfile: "dist/esm/index.mjs",
   format: "esm"
 }, {
-  entryPoints: ["index.ts"],
+  entryPoints: ["src/index.ts"],
   outfile: "dist/cjs/index.cjs",
   format: "cjs"
 }]
