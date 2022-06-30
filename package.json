@@ -21,5 +21,7 @@
     "esbuild": "^0.14.47",
     "typescript": "^4.7.4"
   },
+  "repository": "https://github.com/baked-dev/async-class",
+  "readme": "https://github.com/baked-dev/async-class",
   "private": false
 }
