@@ -1,9 +1,9 @@
 {
   "name": "@baked-dev/async-class",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "main": "dist/cjs/index.cjs",
-  "types": "dist/index.d.ts",
+  "types": "index.d.ts",
   "scripts": {
     "test": "jest",
     "prepublish": "node build.js"
