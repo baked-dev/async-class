@@ -1,8 +1,8 @@
 import { randomBytes } from "crypto";
-import { AwaitableClass, ResolvedInstance } from "./";
+import { AsyncClass, ResolvedInstance } from "./";
 
-describe("AwaitableClass", () => {
-  class ExtendingClass extends AwaitableClass<[string?]> {
+describe("AsyncClass", () => {
+  class ExtendingClass extends AsyncClass<[string?]> {
     public test = "";
 
     protected async init(input: string = "asd"): Promise<any> {

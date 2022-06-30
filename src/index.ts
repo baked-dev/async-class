@@ -7,9 +7,7 @@ export type ResolvedInstance<
  * Extending class is required to have a method with the InitFunction interface
  * @typeArg C - Tuple indicating the type of the init methods parameters
  */
-export abstract class AwaitableClass<C extends any[] = []>
-  implements Promise<any>
-{
+export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
   private static readonly hiddenProps = [
     // promise interface
     "then",
@@ -34,18 +32,18 @@ export abstract class AwaitableClass<C extends any[] = []>
    * */
   private readonly __proxy: ResolvedInstance<this> = new Proxy(this, {
     get: (target, prop) => {
-      if (typeof prop === "string" && AwaitableClass.hiddenProps.includes(prop))
+      if (typeof prop === "string" && AsyncClass.hiddenProps.includes(prop))
         return undefined;
       else return this[prop as keyof typeof target];
     },
     has: (target, prop) => {
-      if (typeof prop === "string" && AwaitableClass.hiddenProps.includes(prop))
+      if (typeof prop === "string" && AsyncClass.hiddenProps.includes(prop))
         return false;
       return target.hasOwnProperty(prop);
     },
     ownKeys: (target) => {
       return Object.keys(target).filter(
-        (key) => !AwaitableClass.hiddenProps.includes(key)
+        (key) => !AsyncClass.hiddenProps.includes(key)
       );
     },
   });
