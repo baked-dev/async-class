@@ -1,13 +1,13 @@
 import "./dist/index";
 
-declare module "@baked/async-class/dist/esm" {
+declare module "@baked-dev/async-class" {
   export * from "./dist/index";
 }
 
-declare module "@baked/async-class/dist/cjs" {
+declare module "@baked-dev/async-class/dist/esm" {
   export * from "./dist/index";
 }
 
-declare module "@baked/async-class" {
+declare module "@baked-dev/async-class/dist/cjs" {
   export * from "./dist/index";
 }
