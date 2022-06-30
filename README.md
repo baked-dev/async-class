@@ -38,7 +38,8 @@ class Test extends AsyncClass<[string]> {
     await new Promise((res) => setTimeout(res, 1000));
   }
 
-  public log = () => {
+  public log = async () => {
+    await this.ready; // wait for contruction to finish
     console.log(this.test);
   };
 }

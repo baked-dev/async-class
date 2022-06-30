@@ -2,11 +2,14 @@ import { randomBytes } from "crypto";
 import { AsyncClass, ResolvedInstance } from "./";
 
 describe("AsyncClass", () => {
-  class ExtendingClass extends AsyncClass<[string?]> {
+  class ExtendingClass extends AsyncClass<[string?, number?]> {
     public test = "";
 
-    protected async construct(input: string = "asd"): Promise<any> {
-      await new Promise((res) => setTimeout(res, 0));
+    protected async construct(
+      input: string = "asd",
+      delay: number = 0
+    ): Promise<any> {
+      await new Promise((res) => setTimeout(res, delay));
       this.test = input;
     }
 
