@@ -1,5 +1,5 @@
 import { randomBytes } from "crypto";
-import { AwaitableClass } from "./";
+import { AwaitableClass, ResolvedInstance } from "./";
 
 describe("AwaitableClass", () => {
   class ExtendingClass extends AwaitableClass<[string?]> {
@@ -25,10 +25,18 @@ describe("AwaitableClass", () => {
     }
   }
 
-  it("is awaitable", async () => {
-    const instance = await new ExtendingClass();
+  const expectInstance = (instance: ResolvedInstance<ExtendingClass>) => {
     expect(instance).toBeInstanceOf(ExtendingClass);
     expect((instance as ExtendingClass).then).toEqual(undefined);
+  };
+
+  it("is awaitable", async () => {
+    const instance = await new ExtendingClass();
+    expectInstance(instance);
+  });
+
+  it("is thenable", async () => {
+    return new ExtendingClass().then(expectInstance);
   });
 
   it("allows awaiting the same instance twice", async () => {
