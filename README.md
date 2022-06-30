@@ -20,10 +20,10 @@ pnpm i @baked-dev/async-class --save-dev
 ### TypeScript
 ```ts
 /**
- * add the parameter types of the init function as a tuple as the generic for AwaitableClass.
+ * add the parameter types of the init function as a tuple as the generic for AsyncClass.
  * (these types can not be Inferred from usage in the init function at the moment)
  */
-class Test extends AwaitableClass<[string]> {
+class Test extends AsyncClass<[string]> {
   public test = "asd";
 
   /** 
@@ -64,9 +64,9 @@ main();
 ### JavaScript
 the same but without types
 ## How?
-The AwaitableClass class implements the Promise interface. 
+AsyncClass class implements the Promise interface. 
 ```ts 
-export abstract class AwaitableClass<C extends any[] = []>
+export abstract class AsyncClass<C extends any[] = []>
   implements Promise<any> 
 ```
 In the constructor the init method supplied by the extending class is called and attached to `this.__promise`:
@@ -110,18 +110,18 @@ The proxied instance of `this` removes the Promise and internal Interfaces, else
 ```ts
 private readonly __proxy: ResolvedInstance<this> = new Proxy(this, {
   get: (target, prop) => {
-    if (typeof prop === "string" && AwaitableClass.hiddenProps.includes(prop))
+    if (typeof prop === "string" && AsyncClass.hiddenProps.includes(prop))
       return undefined;
     else return this[prop as keyof typeof target];
   },
   has: (target, prop) => {
-    if (typeof prop === "string" && AwaitableClass.hiddenProps.includes(prop))
+    if (typeof prop === "string" && AsyncClass.hiddenProps.includes(prop))
       return false;
     return target.hasOwnProperty(prop);
   },
   ownKeys: (target) => {
     return Object.keys(target).filter(
-      (key) => !AwaitableClass.hiddenProps.includes(key)
+      (key) => !AsyncClass.hiddenProps.includes(key)
     );
   },
 });
