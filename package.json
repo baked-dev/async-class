@@ -1,0 +1,24 @@
+{
+  "name": "@baked/async-class",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/cjs/index.cjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "node build.js"
+  },
+  "files": [
+    "./dist/**/*.cjs",
+    "./dist/**/*.cjs",
+    "./dist/**/*.d.ts",
+    "./dist/**/*.d.ts.map"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "esbuild": "^0.14.47",
+    "typescript": "^4.7.4"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "include": ["index.ts"],
+  "compilerOptions": {
+    "composite": false,
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "inlineSources": false,
+    "isolatedModules": true,
+    "moduleResolution": "node",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "preserveWatchOutput": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ESNEXT",
+    "outDir": "dist",
+    "removeComments": false,
+    "emitDeclarationOnly": true
+  },
+  "exclude": ["node_modules"]
+}
