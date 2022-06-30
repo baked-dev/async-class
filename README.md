@@ -39,7 +39,7 @@ class Test extends AsyncClass<[string]> {
   }
 
   public log = async () => {
-    await this.ready; // wait for contruction to finish
+    await this; // wait for contruction to finish
     console.log(this.test);
   };
 }

@@ -23,9 +23,6 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
   }
 
   private readonly __construct: Promise<any>;
-  protected get ready(): Promise<any> {
-    return this.__construct;
-  }
 
   /**
    * proxy to remove the internal and promise interfaces
