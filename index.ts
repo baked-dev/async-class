@@ -35,16 +35,8 @@ export abstract class AwaitableClass<C extends any[] = []>
     return `[Object ${this.constructor.name}]`;
   }
 
-  private ___promise?: Promise<any>;
-  /**
-   * getter returns ___promise is available or assigns the init promise to it
-   */
-  private get __promise() {
-    return this.___promise || (this.___promise = this.init(...this.__args));
-  }
+  private __promise: Promise<any>;
 
-  /** args to forward from constructor to init method */
-  private readonly __args: C;
   /**
    * proxy to remove the internal and promise interfaces
    * not removing the .then from the resolved class would result
@@ -74,8 +66,7 @@ export abstract class AwaitableClass<C extends any[] = []>
    * @param args - will be forwarded to the init method
    */
   constructor(...args: C) {
-    this.__args = args;
-    this.__promise;
+    this.__promise = this.init(...args);
   }
 
   public then<TResult1 = any, TResult2 = never>(
