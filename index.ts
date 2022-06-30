@@ -1,15 +1,7 @@
-export type ResolvedInstance<
-  T extends { then: (cb: (val: any) => any) => Promise<any> }
-> = Omit<
-  T,
-  | "then"
-  | "catch"
-  | "finally"
-  | "__promise"
-  | "___promise"
-  | "__proxy"
-  | "__args"
->;
+type ResolvedInstance<
+  T extends { then: (cb: (val: any) => any) => Promise<any> },
+  O extends readonly string[] = readonly string[]
+> = Omit<T, O[number]>;
 
 /**
  * @virtual
@@ -19,17 +11,16 @@ export type ResolvedInstance<
 export abstract class AwaitableClass<C extends any[] = []>
   implements Promise<any>
 {
-  private static hiddenProps = [
+  private static readonly hiddenProps = [
     // promise interface
     "then",
     "catch",
     "finally",
     // internal helpers
     "__promise",
-    "___promise",
     "__proxy",
-    "__args",
-  ];
+  ] as const;
+
   /** required to satisfy promise interface */
   public get [Symbol.toStringTag]() {
     return `[Object ${this.constructor.name}]`;
@@ -43,20 +34,29 @@ export abstract class AwaitableClass<C extends any[] = []>
    * in endless loops. other keys are removed to interfere as little
    * as possible with the extending class
    * */
-  private readonly __proxy: ResolvedInstance<this> = new Proxy(this, {
+  private readonly __proxy: ResolvedInstance<
+    this,
+    typeof AwaitableClass["hiddenProps"]
+  > = new Proxy(this, {
     get: (target, prop) => {
-      if (typeof prop === "string" && AwaitableClass.hiddenProps.includes(prop))
+      if (
+        typeof prop === "string" &&
+        AwaitableClass.hiddenProps.includes(prop as any)
+      )
         return undefined;
       else return this[prop as keyof typeof target];
     },
     has: (target, prop) => {
-      if (typeof prop === "string" && AwaitableClass.hiddenProps.includes(prop))
+      if (
+        typeof prop === "string" &&
+        AwaitableClass.hiddenProps.includes(prop as any)
+      )
         return false;
       return target.hasOwnProperty(prop);
     },
     ownKeys: (target) => {
       return Object.keys(target).filter(
-        (key) => !AwaitableClass.hiddenProps.includes(key)
+        (key) => !AwaitableClass.hiddenProps.includes(key as any)
       );
     },
   });
@@ -71,7 +71,7 @@ export abstract class AwaitableClass<C extends any[] = []>
 
   public then<TResult1 = any, TResult2 = never>(
     onfulfilled: (
-      value: ResolvedInstance<this>
+      value: ResolvedInstance<this, typeof AwaitableClass["hiddenProps"]>
     ) => TResult1 | PromiseLike<TResult1>,
     onrejected?:
       | ((reason: any) => TResult2 | PromiseLike<TResult2>)
