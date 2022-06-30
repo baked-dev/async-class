@@ -4,7 +4,7 @@ export type ResolvedInstance<
 
 /**
  * @virtual
- * Extending class is required to have a method with the init interface
+ * Extending class is required to have a method with the InitFunction interface
  * @typeArg C - Tuple indicating the type of the init methods parameters
  */
 export abstract class AwaitableClass<C extends any[] = []>
@@ -78,18 +78,20 @@ export abstract class AwaitableClass<C extends any[] = []>
   }
 
   /** proxy forward to the init promises .catch */
-  public catch<TResult = never>(
+  public get catch(): <TResult = never>(
     onrejected?:
       | ((reason: any) => TResult | PromiseLike<TResult>)
       | null
       | undefined
-  ): Promise<any> {
-    return this.__promise.catch(onrejected);
+  ) => Promise<any> {
+    return this.__promise.catch.bind(this.__promise);
   }
 
   /** proxy forward to the init promises .finally */
-  public finally(onfinally?: (() => void) | null | undefined): Promise<any> {
-    return this.__promise.finally(onfinally);
+  public get finally(): (
+    onfinally?: (() => void) | null | undefined
+  ) => Promise<any> {
+    return this.__promise.finally.bind(this.__promise);
   }
 
   /**
