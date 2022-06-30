@@ -29,7 +29,9 @@ class Test extends AwaitableClass<[string]> {
   /** 
    * the init method replaces the constructor and should be async.
    * without a custom constructor the parameters of the constructor 
-   * will match this init method
+   * will match this init method.
+   * has to be a member method as it needs to be available before super()
+   * is called
   */
   protected async init(test: string) {
     console.log(test);
@@ -67,13 +69,13 @@ The AwaitableClass class implements the Promise interface.
 export abstract class AwaitableClass<C extends any[] = []>
   implements Promise<any> 
 ```
-When this.__promise is accessed, a getter calls this.init() with the parameters passed to the constructor and stores the promise in a class variable on first access. 
+In the constructor the init method supplied by the extending class is called and attached to `this.__promise`:
 ```ts
-private get __promise() {
-  return this.___promise || (this.___promise = this.init(...this.__args));
+constructor(...args: C) {
+  this.__promise = this.init(...args);
 }
 ```
-.catch and .finally just proxy to the init promise:
+.catch and .finally just proxy to the `this.__promise`:
 ```ts
 public catch<TResult = never>(
   onrejected?:
