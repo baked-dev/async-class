@@ -1,6 +1,18 @@
+const CONSTRUCT: unique symbol = Symbol("CONSTRUCT");
+const PROXY: unique symbol = Symbol("PROXY");
+
 export type ResolvedInstance<
   T extends { then: (cb: (val: any) => any) => Promise<any> }
-> = Omit<T, "then" | "catch" | "finally" | "__construct" | "__proxy">;
+> = Omit<
+  T,
+  | "then"
+  | "catch"
+  | "finally"
+  | "__construct"
+  | "__proxy"
+  | typeof CONSTRUCT
+  | typeof PROXY
+>;
 
 /**
  * @virtual
@@ -14,15 +26,15 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
     "catch",
     "finally",
     // internal helpers
-    "__construct",
-    "__proxy",
+    CONSTRUCT,
+    PROXY,
   ];
   /** required to satisfy promise interface */
   public get [Symbol.toStringTag]() {
     return `[Object ${this.constructor.name}]`;
   }
 
-  private readonly __construct: Promise<any>;
+  private readonly [CONSTRUCT]: Promise<any>;
 
   /**
    * proxy to remove the internal and promise interfaces
@@ -30,7 +42,7 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
    * in endless loops. other keys are removed to interfere as little
    * as possible with the extending class
    * */
-  private readonly __proxy: ResolvedInstance<this> = new Proxy(this, {
+  private readonly [PROXY]: ResolvedInstance<this> = new Proxy(this, {
     get: (target, prop) => {
       if (typeof prop === "string" && AsyncClass.hiddenProps.includes(prop))
         return undefined;
@@ -53,7 +65,7 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
    * @param args - will be forwarded to the construct method
    */
   constructor(...args: C) {
-    this.__construct = this.construct(...args);
+    this[CONSTRUCT] = this.construct(...args);
   }
 
   public then<TResult1 = any, TResult2 = never>(
@@ -65,13 +77,13 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
       | null
       | undefined
   ): Promise<TResult1 | TResult2> {
-    return this.__construct.then(() => {
+    return this[CONSTRUCT].then(() => {
       /**
        * resolve promise and return result for chaining.
        * resolve with the proxy to "this" that removed
        * internal and promise interfaces
        * */
-      return onfulfilled(this.__proxy);
+      return onfulfilled(this[PROXY]);
     }, onrejected);
   }
 
@@ -82,14 +94,14 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
       | null
       | undefined
   ) => Promise<any> {
-    return this.__construct.catch.bind(this.__construct);
+    return this[CONSTRUCT].catch.bind(this[CONSTRUCT]);
   }
 
   /** proxy forward to the construct promises .finally */
   public get finally(): (
     onfinally?: (() => void) | null | undefined
   ) => Promise<any> {
-    return this.__construct.finally.bind(this.__construct);
+    return this[CONSTRUCT].finally.bind(this[CONSTRUCT]);
   }
 
   /**
