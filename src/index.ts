@@ -1,11 +1,11 @@
 export type ResolvedInstance<
   T extends { then: (cb: (val: any) => any) => Promise<any> }
-> = Omit<T, "then" | "catch" | "finally" | "__promise" | "__proxy">;
+> = Omit<T, "then" | "catch" | "finally" | "__construct" | "__proxy">;
 
 /**
  * @virtual
- * Extending class is required to have a method with the InitFunction interface
- * @typeArg C - Tuple indicating the type of the init methods parameters
+ * Extending class is required to have a method with the construct interface
+ * @typeArg C - Tuple indicating the type of the construct methods parameters
  */
 export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
   private static readonly hiddenProps = [
@@ -14,7 +14,7 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
     "catch",
     "finally",
     // internal helpers
-    "__promise",
+    "__construct",
     "__proxy",
   ];
   /** required to satisfy promise interface */
@@ -22,7 +22,7 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
     return `[Object ${this.constructor.name}]`;
   }
 
-  private __promise: Promise<any>;
+  private __construct: Promise<any>;
 
   /**
    * proxy to remove the internal and promise interfaces
@@ -50,10 +50,10 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
 
   /**
    * Can only be extended, should not be initialzed directly
-   * @param args - will be forwarded to the init method
+   * @param args - will be forwarded to the construct method
    */
   constructor(...args: C) {
-    this.__promise = this.init(...args);
+    this.__construct = this.construct(...args);
   }
 
   public then<TResult1 = any, TResult2 = never>(
@@ -65,7 +65,7 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
       | null
       | undefined
   ): Promise<TResult1 | TResult2> {
-    return this.__promise.then(() => {
+    return this.__construct.then(() => {
       /**
        * resolve promise and return result for chaining.
        * resolve with the proxy to "this" that removed
@@ -75,26 +75,26 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
     }, onrejected);
   }
 
-  /** proxy forward to the init promises .catch */
+  /** proxy forward to the construct promises .catch */
   public get catch(): <TResult = never>(
     onrejected?:
       | ((reason: any) => TResult | PromiseLike<TResult>)
       | null
       | undefined
   ) => Promise<any> {
-    return this.__promise.catch.bind(this.__promise);
+    return this.__construct.catch.bind(this.__construct);
   }
 
-  /** proxy forward to the init promises .finally */
+  /** proxy forward to the construct promises .finally */
   public get finally(): (
     onfinally?: (() => void) | null | undefined
   ) => Promise<any> {
-    return this.__promise.finally.bind(this.__promise);
+    return this.__construct.finally.bind(this.__construct);
   }
 
   /**
    * @virtual
    * @param args - Arguments will be forarded from the construcor
    */
-  protected abstract init(...args: C): Promise<any>;
+  protected abstract construct(...args: C): Promise<any>;
 }

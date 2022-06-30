@@ -5,7 +5,7 @@ describe("AsyncClass", () => {
   class ExtendingClass extends AsyncClass<[string?]> {
     public test = "";
 
-    protected async init(input: string = "asd"): Promise<any> {
+    protected async construct(input: string = "asd"): Promise<any> {
       await new Promise((res) => setTimeout(res, 0));
       this.test = input;
     }

@@ -20,20 +20,20 @@ pnpm i @baked-dev/async-class --save-dev
 ### TypeScript
 ```ts
 /**
- * add the parameter types of the init function as a tuple as the generic for AsyncClass.
- * (these types can not be Inferred from usage in the init function at the moment)
+ * add the parameter types of the construct method as a tuple as the generic for AsyncClass.
+ * (these types can not be Inferred from usage in the construct function at the moment)
  */
 class Test extends AsyncClass<[string]> {
   public test = "asd";
 
   /** 
-   * the init method replaces the constructor and should be async.
+   * the construct method replaces the constructor and should be async.
    * without a custom constructor the parameters of the constructor 
-   * will match this init method.
+   * will match this construct method.
    * has to be a member method as it needs to be available before super()
    * is called
   */
-  protected async init(test: string) {
+  protected async construct(test: string) {
     console.log(test);
     await new Promise((res) => setTimeout(res, 1000));
   }
@@ -69,13 +69,13 @@ AsyncClass class implements the Promise interface.
 export abstract class AsyncClass<C extends any[] = []>
   implements Promise<any> 
 ```
-In the constructor the init method supplied by the extending class is called and attached to `this.__promise`:
+In the constructor the construct method supplied by the extending class is called and attached to `this.__construct`:
 ```ts
 constructor(...args: C) {
-  this.__promise = this.init(...args);
+  this.__construct = this.construct(...args);
 }
 ```
-.catch and .finally just proxy to the `this.__promise`:
+.catch and .finally just proxy to the `this.__construct`:
 ```ts
 public catch<TResult = never>(
   onrejected?:
@@ -83,11 +83,11 @@ public catch<TResult = never>(
     | null
     | undefined
 ): Promise<any> {
-  return this.__promise.catch(onrejected);
+  return this.__construct.catch(onrejected);
 }
 
 public finally(onfinally?: (() => void) | null | undefined): Promise<any> {
-  return this.__promise.finally(onfinally);
+  return this.__construct.finally(onfinally);
 }
 ```
 .then is intercepted and resolves with a proxied instance:
@@ -101,7 +101,7 @@ public then<TResult1 = any, TResult2 = never>(
     | null
     | undefined
 ): Promise<TResult1 | TResult2> {
-  return this.__promise.then(() => {
+  return this.__construct.then(() => {
     return onfulfilled(this.__proxy);
   }, onrejected);
 }
