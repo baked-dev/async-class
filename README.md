@@ -1,6 +1,20 @@
-# async-class
+# @baked-dev/async-class
 
-Small helper to add async constructors to JavaScript. Written in TypeScript
+Small utility to add async constructors to JavaScript/TypeScript
+
+## Install
+### npm
+```
+npm i @baked-dev/async-class --save-dev
+```
+### yarn
+```
+yarn add @baked-dev/async-class --dev
+```
+### pnpm
+```
+pnpm i @baked-dev/async-class --save-dev
+```
 
 ## Usage
 ### TypeScript
@@ -45,7 +59,8 @@ const main = async () => {
 
 main();
 ```
-
+### JavaScript
+the same but without types
 ## How?
 The AwaitableClass class implements the Promise interface. 
 ```ts 
