@@ -121,11 +121,3 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
    */
   protected abstract construct(...args: C): Promise<any>;
 }
-
-class ImmediatePromise<T> extends Promise<T> {
-  constructor([cb]: ConstructorParameters<PromiseConstructor>) {
-    super((resolve, reject) => {
-      return setImmediate(cb, resolve, reject);
-    });
-  }
-}
