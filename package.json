@@ -9,7 +9,6 @@
     "prepublishOnly": "node build.js"
   },
   "files": [
-    "index.d.ts",
     "dist/**/*.cjs",
     "dist/**/*.mjs",
     "dist/index.d.ts",

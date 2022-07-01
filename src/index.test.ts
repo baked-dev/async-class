@@ -3,14 +3,14 @@ import { AsyncClass, ResolvedInstance } from "./";
 
 describe("AsyncClass", () => {
   class ExtendingClass extends AsyncClass<[string?, number?]> {
-    public test = "";
+    public test = "123";
 
     protected async construct(
       input: string = "asd",
       delay: number = 0
     ): Promise<any> {
-      await new Promise((res) => setTimeout(res, delay));
       this.test = input;
+      await new Promise((res) => setTimeout(res, delay));
     }
 
     public get name() {

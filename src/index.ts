@@ -1,6 +1,9 @@
 const CONSTRUCT: unique symbol = Symbol("CONSTRUCT");
 const PROXY: unique symbol = Symbol("PROXY");
 
+const immediate = async () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
+
 export type ResolvedInstance<
   T extends { then: (cb: (val: any) => any) => Promise<any> }
 > = Omit<
@@ -34,7 +37,11 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
     return `[Object ${this.constructor.name}]`;
   }
 
-  private readonly [CONSTRUCT]: Promise<any>;
+  /**
+   * non-null asserted because everything that uses it is executed
+   * after assignment by design.
+   * */
+  private [CONSTRUCT]!: Promise<any>;
 
   /**
    * proxy to remove the internal and promise interfaces
@@ -65,10 +72,11 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
    * @param args - will be forwarded to the construct method
    */
   constructor(...args: C) {
-    this[CONSTRUCT] = this.construct(...args);
+    /** let the parent constructor finish before running the fake constructor */
+    immediate().then(() => (this[CONSTRUCT] = this.construct(...args)));
   }
 
-  public then<TResult1 = any, TResult2 = never>(
+  public async then<TResult1 = any, TResult2 = never>(
     onfulfilled: (
       value: ResolvedInstance<this>
     ) => TResult1 | PromiseLike<TResult1>,
@@ -77,6 +85,7 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
       | null
       | undefined
   ): Promise<TResult1 | TResult2> {
+    await immediate();
     return this[CONSTRUCT].then(() => {
       /**
        * resolve promise and return result for chaining.
@@ -88,20 +97,22 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
   }
 
   /** proxy forward to the construct promises .catch */
-  public get catch(): <TResult = never>(
+  public async catch<TResult = never>(
     onrejected?:
       | ((reason: any) => TResult | PromiseLike<TResult>)
       | null
       | undefined
-  ) => Promise<any> {
-    return this[CONSTRUCT].catch.bind(this[CONSTRUCT]);
+  ): Promise<any> {
+    await immediate();
+    return this[CONSTRUCT].catch(onrejected);
   }
 
   /** proxy forward to the construct promises .finally */
-  public get finally(): (
+  public async finally(
     onfinally?: (() => void) | null | undefined
-  ) => Promise<any> {
-    return this[CONSTRUCT].finally.bind(this[CONSTRUCT]);
+  ): Promise<any> {
+    await immediate();
+    return this[CONSTRUCT].finally(onfinally);
   }
 
   /**
@@ -109,4 +120,12 @@ export abstract class AsyncClass<C extends any[] = []> implements Promise<any> {
    * @param args - Arguments will be forarded from the construcor
    */
   protected abstract construct(...args: C): Promise<any>;
+}
+
+class ImmediatePromise<T> extends Promise<T> {
+  constructor([cb]: ConstructorParameters<PromiseConstructor>) {
+    super((resolve, reject) => {
+      return setImmediate(cb, resolve, reject);
+    });
+  }
 }
