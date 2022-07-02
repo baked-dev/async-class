@@ -1,5 +1,5 @@
 import { randomBytes } from "crypto";
-import { AsyncClass, ResolvedInstance } from "./";
+import { AsyncClass, ResolvedInstance } from "../src";
 
 describe("AsyncClass", () => {
   class ExtendingClass extends AsyncClass<[string?, number?]> {

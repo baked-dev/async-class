@@ -14,7 +14,7 @@
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "ESNEXT",
+    "target": "ES2022",
     "outDir": "dist",
     "removeComments": false,
     "emitDeclarationOnly": true

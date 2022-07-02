@@ -1,30 +1,35 @@
 {
   "name": "@baked-dev/async-class",
   "version": "1.1.6",
+  "private": false,
   "description": "",
-  "main": "dist/cjs/index.cjs",
-  "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest",
-    "prepublishOnly": "node build.js"
+    "prepublishOnly": "build-ts-package"
   },
   "files": [
     "dist/**/*.cjs",
     "dist/**/*.mjs",
-    "dist/index.d.ts",
-    "dist/index.d.ts.map"
+    "dist/**/*.js.map",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.ts.map"
   ],
   "keywords": [],
   "author": "baked-dev",
   "license": "ISC",
   "devDependencies": {
+    "@baked-dev/ts-package": "^0.0.2",
     "@types/jest": "^28.1.3",
-    "esbuild": "^0.14.47",
+    "@types/node": "^18.0.0",
     "jest": "^28.1.2",
     "ts-jest": "^28.0.5",
     "typescript": "^4.7.4"
   },
+  "exports": {
+    "import": "./dist/esm/index.mjs",
+    "require": "./dist/cjs/index.cjs"
+  },
+  "types": "dist/cjs/index.d.ts",
   "repository": "https://github.com/baked-dev/async-class",
-  "readme": "https://github.com/baked-dev/async-class",
-  "private": false
+  "readme": "https://github.com/baked-dev/async-class"
 }
